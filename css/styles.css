@@ -96,3 +96,37 @@ select {
   text-align: center;
   margin-top: 50px;
 }
+
+@media (max-width: 1500px)
+{
+  .illustration img {
+    width: 500px;
+  }
+}
+
+@media (max-width: 1250px)
+{
+  .illustration img {
+    margin-left: 20px;
+  }
+}
+
+@media (max-width: 1150px)
+{
+  .container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .illustration {
+    display: none;
+  }
+}
+
+@media (max-width: 420px)
+{
+  .modal {
+    width: 400px;
+  }
+}
