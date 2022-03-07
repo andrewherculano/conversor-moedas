@@ -5,11 +5,45 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Conversor de moedas</title>
+
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
   <div class="container">
+    <section class="illustration">
+      <img src="./src/ilustracao-financa.svg" alt="Ilustração finanças">
+    </section>
 
+    <section id="currency-converter">
+      <div class="modal">
+        <div class="title">
+          <h1>Conversor de moedas</h1>
+          <img src="./src/icone-conversor.svg" alt="Icone conversor">
+        </div>
+
+        <div class="currency-converter-content">
+          <input type="number" placeholder="1.00">
+          <select>
+            <option>USD</option>
+            <option>BRL</option>
+          </select>
+
+          <img src="./src/setas.svg" alt="">
+
+          <span>5.13</span>
+          <select>
+            <option>USD</option>
+            <option>BRL</option>
+          </select>
+        </div>
+
+        <p id="legend">1 BRL igual a 0,20 USD</p>
+      </div>
+    </section>
   </div>
 </body>
 
