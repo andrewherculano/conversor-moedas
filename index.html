@@ -4,6 +4,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="shortcut icon" type="imagex/png" href="./src/icone-conversor.ico">
   <title>Conversor de moedas</title>
 
   <link rel="stylesheet" href="./css/styles.css">
@@ -26,22 +28,22 @@
         </div>
 
         <div class="currency-converter-content">
-          <input type="number" placeholder="1.00">
-          <select>
+          <input data-js="amount-to-conversion" type="number" placeholder="1.00">
+          <select data-js="currency-one">
             <option>USD</option>
             <option>BRL</option>
           </select>
 
           <img src="./src/setas.svg" alt="">
 
-          <span>5.13</span>
-          <select>
+          <span data-js="conversion-result">5.13</span>
+          <select data-js="currency-two">
             <option>USD</option>
             <option>BRL</option>
           </select>
         </div>
 
-        <p id="legend">1 BRL igual a 0,20 USD</p>
+        <p data-js="conversion-precision" id="legend">1 BRL igual a 0,20 USD</p>
       </div>
     </section>
   </div>
