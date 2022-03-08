@@ -1,8 +1,10 @@
 const alertErrorEl = document.querySelector('[data-js="alert-error"]')
 const alertErrorMessageEl = document.querySelector('[data-js="alert-error-message"]')
 const alertErrorButtonEl = document.querySelector('[data-js="alert-error-button"]')
+const currencyOneEl = document.querySelector('[data-js="currency-one"]')
+const currencyTwoEl = document.querySelector('[data-js="currency-two"]')
 
-const url = 'https://v6.exchangerate-api.com/v6/5c8d0f7db23a584339f95428/latest/USD'
+let internalExchangeRate = {}
 
 const getErrorMessage = (error) => {
   return {
@@ -14,7 +16,12 @@ const getErrorMessage = (error) => {
   }[error] || 'Não foi possível obter os dados'
 }
 
-const fetchExchangeRate = async () => {
+const APIKey = '5c8d0f7db23a584339f95428'
+const getUrl = (currency) => {
+  return `https://v6.exchangerate-api.com/v6/${APIKey}/latest/${currency}`
+}
+
+const fetchExchangeRate = async (url) => {
   try {
     const response = await fetch(url)
     const exchangeRateData = await response.json()
@@ -24,7 +31,7 @@ const fetchExchangeRate = async () => {
       throw new Error(errorType)
     }
 
-    console.log(exchangeRateData)
+    return exchangeRateData
   } catch ({ message }) {
     console.log(message)
 
@@ -37,4 +44,16 @@ const fetchExchangeRate = async () => {
   }
 }
 
-fetchExchangeRate()
+const initializer = async () => {
+  internalExchangeRate = { ...await fetchExchangeRate(getUrl('USD')) }
+
+  const getOptions = (selectedCurrency) => {
+    return Object.keys(internalExchangeRate.conversion_rates)
+      .map(currency => `<option ${currency === selectedCurrency ? 'selected' : ''}>${currency}</option>`)
+  }
+
+  currencyOneEl.innerHTML = getOptions('USD')
+  currencyTwoEl.innerHTML = getOptions('BRL')
+}
+
+initializer()
