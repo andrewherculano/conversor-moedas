@@ -1,3 +1,7 @@
+const alertErrorEl = document.querySelector('[data-js="alert-error"]')
+const alertErrorMessageEl = document.querySelector('[data-js="alert-error-message"]')
+const alertErrorButtonEl = document.querySelector('[data-js="alert-error-button"]')
+
 const url = 'https://v6.exchangerate-api.com/v6/5c8d0f7db23a584339f95428/latest/USD'
 
 const getErrorMessage = (error) => {
@@ -23,6 +27,13 @@ const fetchExchangeRate = async () => {
     console.log(exchangeRateData)
   } catch ({ message }) {
     console.log(message)
+
+    alertErrorEl.classList.remove('display-none')
+    alertErrorMessageEl.textContent = message
+
+    alertErrorButtonEl.addEventListener('click', () => {
+      alertErrorEl.classList.add('display-none')
+    })
   }
 }
 
