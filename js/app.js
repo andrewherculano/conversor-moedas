@@ -3,6 +3,7 @@ const alertErrorMessageEl = document.querySelector('[data-js="alert-error-messag
 const alertErrorButtonEl = document.querySelector('[data-js="alert-error-button"]')
 const currencyOneEl = document.querySelector('[data-js="currency-one"]')
 const currencyTwoEl = document.querySelector('[data-js="currency-two"]')
+const conversionPresicionEl = document.querySelector('[data-js="conversion-precision"]')
 
 let internalExchangeRate = {}
 
@@ -49,11 +50,13 @@ const initializer = async () => {
 
   const getOptions = (selectedCurrency) => {
     return Object.keys(internalExchangeRate.conversion_rates)
-      .map(currency => `<option ${currency === selectedCurrency ? 'selected' : ''}>${currency}</option>`)
+      .map((currency) => `<option ${currency === selectedCurrency ? 'selected' : ''}>${currency}</option>`)
   }
 
   currencyOneEl.innerHTML = getOptions('USD')
   currencyTwoEl.innerHTML = getOptions('BRL')
+
+  conversionPresicionEl.textContent = `1 USD igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} BRL`
 }
 
 initializer()
