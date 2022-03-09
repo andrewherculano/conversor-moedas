@@ -93,6 +93,10 @@ select {
   color: var(--title);
 }
 
+#switch-currency {
+  cursor: pointer;
+}
+
 .alert-error {
   margin-top: 5px;
   display: flex;

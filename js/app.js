@@ -6,6 +6,7 @@ const currencyTwoEl = document.querySelector('[data-js="currency-two"]')
 const conversionResultEl = document.querySelector('[data-js="conversion-result"]')
 const conversionPresicionEl = document.querySelector('[data-js="conversion-precision"]')
 const amountToConversionEl = document.querySelector('[data-js="amount-to-conversion"]')
+const switchCurrencyButton = document.querySelector('[data-js="switch-currency"]')
 
 let internalExchangeRate = {}
 
@@ -74,6 +75,19 @@ currencyOneEl.addEventListener('input', async (e) => {
 
 currencyTwoEl.addEventListener('input', (e) => {
   conversionResultEl.textContent = (amountToConversionEl.value * internalExchangeRate.conversion_rates[e.target.value]).toFixed(2)
+  conversionPresicionEl.textContent = `1 ${currencyOneEl.value} igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} ${currencyTwoEl.value}`
+})
+
+switchCurrencyButton.addEventListener('click', async () => {
+  const currencyOne = currencyOneEl.value
+  const currencyTwo = currencyTwoEl.value
+
+  currencyOneEl.value = currencyTwo
+  currencyTwoEl.value = currencyOne
+
+  internalExchangeRate = { ...(await fetchExchangeRate(getUrl(currencyOneEl.value))) }
+
+  conversionResultEl.textContent = (amountToConversionEl.value * internalExchangeRate.conversion_rates[currencyTwoEl.value]).toFixed(2)
   conversionPresicionEl.textContent = `1 ${currencyOneEl.value} igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} ${currencyTwoEl.value}`
 })
 
