@@ -8,7 +8,35 @@ const conversionPresicionEl = document.querySelector('[data-js="conversion-preci
 const amountToConversionEl = document.querySelector('[data-js="amount-to-conversion"]')
 const switchCurrencyButton = document.querySelector('[data-js="switch-currency"]')
 
-let internalExchangeRate = {}
+const showAlertError = (message) => {
+  console.log(message)
+
+  alertErrorEl.classList.remove('display-none')
+  alertErrorMessageEl.textContent = message
+
+  alertErrorButtonEl.addEventListener('click', () => {
+    alertErrorEl.classList.add('display-none')
+  })
+}
+
+const state = (() => {
+  let exchangeRate = {}
+
+  return {
+    getExchangeRate: () => {
+      return exchangeRate
+    },
+    setExchangeRate: (newExchangeRate) => {
+      if (!newExchangeRate.conversion_rates) {
+        showAlertError('O objeto precisa ter uma propriedade "conversion_rates"')
+        return
+      }
+
+      exchangeRate = newExchangeRate
+      return exchangeRate
+    }
+  }
+})()
 
 const getErrorMessage = (error) => {
   return {
@@ -35,60 +63,96 @@ const fetchExchangeRate = async (url) => {
       throw new Error(errorType)
     }
 
-    return exchangeRateData
+    return state.setExchangeRate(exchangeRateData)
   } catch ({ message }) {
-    console.log(message)
-
-    alertErrorEl.classList.remove('display-none')
-    alertErrorMessageEl.textContent = message
-
-    alertErrorButtonEl.addEventListener('click', () => {
-      alertErrorEl.classList.add('display-none')
-    })
+    showAlertError(message)
   }
+}
+
+const getOptions = (selectedCurrency, conversion_rates) => {
+  const selectedAttribute = (currency) => {
+    return currency === selectedCurrency ? 'selected' : ''
+  }
+
+  const getOptionsAsArray = (currency) => {
+    return `<option ${selectedAttribute(currency)}>${currency}</option>`
+  }
+
+  return Object.keys(conversion_rates)
+    .map(getOptionsAsArray)
+    .join('')
+}
+
+const getMultipliedExchangeRate = (conversion_rates) => {
+  const currencyTwoValue = conversion_rates[currencyTwoEl.value]
+  const amountToConversionValue = amountToConversionEl.value
+
+  return (amountToConversionValue * currencyTwoValue).toFixed(2)
+}
+
+const getNotRoundedExchangeRate = (conversion_rates) => {
+  const currencyTwoValue = conversion_rates[currencyTwoEl.value]
+  return `1 ${currencyOneEl.value} igual a ${currencyTwoValue.toFixed(3)} ${currencyTwoEl.value}`
+}
+
+const showConvertedCurrencies = ({ conversion_rates }) => {
+  conversionResultEl.textContent = getMultipliedExchangeRate(conversion_rates)
+  conversionPresicionEl.textContent = getNotRoundedExchangeRate(conversion_rates)
+}
+
+const showInitialInfo = ({ conversion_rates }) => {
+  currencyOneEl.innerHTML = getOptions('USD', conversion_rates)
+  currencyTwoEl.innerHTML = getOptions('BRL', conversion_rates)
+
+  conversionPresicionEl.textContent = getNotRoundedExchangeRate(conversion_rates)
 }
 
 const initializer = async () => {
-  internalExchangeRate = { ...(await fetchExchangeRate(getUrl('USD'))) }
+  const url = getUrl('USD')
+  const exchangeRate = await fetchExchangeRate(url)
 
-  const getOptions = (selectedCurrency) => {
-    return Object.keys(internalExchangeRate.conversion_rates)
-      .map((currency) => `<option ${currency === selectedCurrency ? 'selected' : ''}>${currency}</option>`)
+  if (exchangeRate && exchangeRate.conversion_rates) {
+    showInitialInfo(exchangeRate)
   }
-
-  currencyOneEl.innerHTML = getOptions('USD')
-  currencyTwoEl.innerHTML = getOptions('BRL')
-
-  conversionPresicionEl.textContent = `1 USD igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} BRL`
 }
 
-amountToConversionEl.addEventListener('input', (e) => {
-  conversionResultEl.textContent = (e.target.value * internalExchangeRate.conversion_rates[currencyTwoEl.value]).toFixed(2)
-})
-
-currencyOneEl.addEventListener('input', async (e) => {
-  internalExchangeRate = { ...(await fetchExchangeRate(getUrl(e.target.value))) }
-
-  conversionResultEl.textContent = (amountToConversionEl.value * internalExchangeRate.conversion_rates[currencyTwoEl.value]).toFixed(2)
-  conversionPresicionEl.textContent = `1 ${e.target.value} igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} ${currencyTwoEl.value}`
-})
-
-currencyTwoEl.addEventListener('input', (e) => {
-  conversionResultEl.textContent = (amountToConversionEl.value * internalExchangeRate.conversion_rates[e.target.value]).toFixed(2)
-  conversionPresicionEl.textContent = `1 ${currencyOneEl.value} igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} ${currencyTwoEl.value}`
-})
-
-switchCurrencyButton.addEventListener('click', async () => {
+const getSwitchCurrency = () => {
   const currencyOne = currencyOneEl.value
   const currencyTwo = currencyTwoEl.value
 
   currencyOneEl.value = currencyTwo
   currencyTwoEl.value = currencyOne
+}
 
-  internalExchangeRate = { ...(await fetchExchangeRate(getUrl(currencyOneEl.value))) }
+const handleAmountToConversionResult = () => {
+  const { conversion_rates } = state.getExchangeRate()
+  conversionResultEl.textContent = getMultipliedExchangeRate(conversion_rates)
+}
 
-  conversionResultEl.textContent = (amountToConversionEl.value * internalExchangeRate.conversion_rates[currencyTwoEl.value]).toFixed(2)
-  conversionPresicionEl.textContent = `1 ${currencyOneEl.value} igual a ${internalExchangeRate.conversion_rates[currencyTwoEl.value].toFixed(2)} ${currencyTwoEl.value}`
-})
+const handleCurrencyOneInput = async (e) => {
+  const url = getUrl(e.target.value)
+  const exchangeRate = await fetchExchangeRate(url)
+
+  showConvertedCurrencies(exchangeRate)
+}
+
+const handleCurrencyTwoInput = () => {
+  const exchangeRate = state.getExchangeRate()
+  showConvertedCurrencies(exchangeRate)
+}
+
+const handleSwitchCurrencyButton = async () => {
+  getSwitchCurrency()
+
+  const url = getUrl(currencyOneEl.value)
+  const exchangeRate = await fetchExchangeRate(url)
+
+  showConvertedCurrencies(exchangeRate)
+}
+
+amountToConversionEl.addEventListener('input', handleAmountToConversionResult)
+currencyOneEl.addEventListener('input', handleCurrencyOneInput)
+currencyTwoEl.addEventListener('input', handleCurrencyTwoInput)
+switchCurrencyButton.addEventListener('click', handleSwitchCurrencyButton)
 
 initializer()
