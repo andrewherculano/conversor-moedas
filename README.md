@@ -1,6 +1,6 @@
 <h1 align="center">
   Conversor de moedas 
-  <img src=".github/icone-conversor.svg" alt="Conversor de moedas" width="20px">
+  <img src="./.github/icone-conversor.svg" alt="Conversor de moedas" width="20px">
 </h1>
 
 <p align="center">
@@ -12,7 +12,7 @@
 </br>
 
 <p align="center">
-  <img alt="Converosr de moedas" src=".github/home.jpg" width="100%">
+  <img alt="Conversor de moedas" src="./.github/home.jpg" width="100%">
 </p>
 
 ## 🚀 Tecnologias
